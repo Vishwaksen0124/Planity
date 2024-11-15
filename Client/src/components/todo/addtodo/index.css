@@ -1,0 +1,26 @@
+.describe{
+    margin-right: 10px;
+    overflow-y: hidden;
+    height: 200px;
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 20px;
+}
+
+textarea:focus,.MuiInputBase-input{
+    outline: none !important;
+}
+
+.Mui-selected {
+    outline: none,                                                                   
+}
+
+.glbbtn{
+    margin-left: 5px !important;
+    color: #009be5 !important;
+}
+.glbbtn:focus{
+    outline: none;
+}
