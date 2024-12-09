@@ -1,20 +1,8 @@
-## Trying to make it like asana Task manager
-1. It has future like login sign up 
-2. Assign task 
-3. List all task those are assigned to you 
-4. admin can see all task 
-5. like or dislike ( backend is done ) from UI I need to be done 
-### Under construction 
+# React + Vite
 
-## How to run
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Clone it
-Go to todo branch 
-Then go to root directory 
-and then `npm i`
+Currently, two official plugins are available:
 
-then npm start
-
-demo vedio : 
-
-Happy coding !!!
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh

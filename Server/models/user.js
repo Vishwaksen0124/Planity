@@ -1,81 +1,60 @@
-const mongoose = require("mongoose");
-const mongooseBcrypt = require("mongoose-bcrypt");
-const mongooseTimeStamp = require("mongoose-timestamp");
-const validator = require("validator");
-const uuidApiKey = require("uuid-apikey");
+import bcrypt from "bcryptjs"
+import mongoose,{Schema} from "mongoose"
 
-const TYPE_ADMIN = "admin",
-  TYPE_SDE = "sde",
-  TYPE_NORMAL = "normal";
-const STATUS_ACTIVE = "active",
-  STATUS_PENDING = "pending",
-  STATUS_DELETED = "deleted",
-  STATUS_DISABLED = "disabled";
+const userSchema = new Schema({
+    name:{
+        type: String,
+        required: true
+    },
+    title:{
+        type: String,
+        required: true
+    },
 
-const userSchema = new mongoose.Schema(
-  {
-    name: {
-      type: String,
-      trim: true,
-      minlength: 3,
-      maxlength: 100,
-      required: true,
+    role:{
+        type: String,
+        required: true
     },
-    profile: {
-      type: String,
-      trim: true,
+    email:{
+        type: String,
+        required: true,
+        unique: true
     },
-    email: {
-      type: String,
-      lowercase: true,
-      trim: true,
-      required: true,
-      unique: true,
-      validate: function (value) {
-        return validator.isEmail(value);
-      },
+    password:{
+        type: String,
+        required: true
     },
-    password: {
-      type: String,
-      required: true,
-      bcrypt: true,
+    isAdmin:{
+        type: Boolean,
+        default: false,
+        required: true
     },
-    usertype: {
-      type: String,
-      required: true,
-      enum: [TYPE_ADMIN, TYPE_SDE, TYPE_NORMAL],
+    tasks:[{
+        type: Schema.Types.ObjectId,
+        ref:"Task"
+    }],
+    isActive:{
+        type: Boolean,
+        default: true,
+        required:true
     },
-    api_key: {
-      type: String,
-      required: true,
-      unique: true,
-      default: uuidApiKey.create().apiKey,
-    },
-    status: {
-      type: String,
-      required: true,
-      enum: [STATUS_ACTIVE, STATUS_PENDING, STATUS_DISABLED, STATUS_DELETED],
-      default: STATUS_PENDING,
-    },
-  },
-  { collection: "users" }
-);
-// Static Method's
-userSchema.statics.findByEmail = async function (email) {
-  let user = await this.findOne({ email: email });
-  return user;
-};
 
-userSchema.statics.TYPE_ADMIN = TYPE_ADMIN;
-userSchema.statics.TYPE_NORMAL = TYPE_NORMAL;
-userSchema.statics.TYPE_SDE = TYPE_SDE;
-userSchema.statics.STATUS_ACTIVE = STATUS_ACTIVE;
-userSchema.statics.STATUS_PENDING = STATUS_PENDING;
-userSchema.statics.STATUS_DELETED = STATUS_DELETED;
-userSchema.statics.STATUS_DISABLED = STATUS_DISABLED;
+}, {
+    timestamps:true
+});
 
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) {
+      next();
+    }
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  });
 
-userSchema.plugin(mongooseBcrypt);
-userSchema.plugin(mongooseTimeStamp);
+  userSchema.methods.matchPassword = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+  };
 
-module.exports = mongoose.model("User", userSchema);
+  const User = mongoose.model("User", userSchema);
+
+  export default User;

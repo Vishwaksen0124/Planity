@@ -1,5 +1,2 @@
-.DS_Store
-node_modules
-config.json
-app-ignore.js
+/node_modules
 .env
