@@ -15,6 +15,8 @@ import { BGS, PRIOTITYSTYELS, TASK_TYPE, getInitials } from "../utils";
 import UserInfo from "../components/UserInfo";
 import { useGetDashboardStatsQuery } from "../redux/slices/api/taskApiSlice";
 import Loading from "../components/Loader";
+import { Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 const TaskTable = ({ tasks }) => {
   const ICONS = {
@@ -146,6 +148,11 @@ const UserTable = ({ users }) => {
   );
 };
 const Dashboard = () => {
+  const user = useSelector((state) => state.auth.user);
+    if (user.role !== "Admin") {
+      console.log("Not authenticated");
+      return <Navigate to='/tasks' />;
+    }
   const {data, isLoading} = useGetDashboardStatsQuery();
 
   if(isLoading)
@@ -194,7 +201,6 @@ const Dashboard = () => {
         <div className='h-full flex flex-1 flex-col justify-between'>
           <p className='text-base text-gray-600'>{label}</p>
           <span className='text-2xl font-semibold'>{count}</span>
-          <span className='text-sm text-gray-400'>{"50 last month"}</span>
         </div>
 
         <div

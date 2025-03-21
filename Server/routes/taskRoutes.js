@@ -19,7 +19,7 @@ router.post("/create", protectRoute, createTask);
 router.post("/duplicate/:id", protectRoute, duplicateTask);
 router.post("/activity/:id", protectRoute, postTaskActivity);
 
-router.get("/dashboard", protectRoute, dashboardStatistics);
+router.get("/dashboard", protectRoute, isAdminRoute, dashboardStatistics);
 router.get("/", protectRoute, getTasks);
 router.get("/:id", protectRoute, getTask);
 

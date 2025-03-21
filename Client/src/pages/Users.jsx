@@ -8,7 +8,7 @@ import ConfirmatioDialog, { UserAction } from "../components/Dialogs";
 import AddUser from "../components/AddUser";
 import { useDeleteUserMutation, useGetTeamListQuery, useUserActionMutation } from "../redux/slices/api/userApiSlice";
 import { toast } from "sonner";
-
+import { Navigate } from "react-router-dom";
 
 const Users = () => {
   const [openDialog, setOpenDialog] = useState(false);
@@ -17,6 +17,11 @@ const Users = () => {
   const [selected, setSelected] = useState(null);
   const { user } = useSelector((state) => state.auth);
   const roles = user.role
+  if (roles !== "Admin") {
+      toast.error("Not authenticated");
+      console.log("Not authenticated");
+      return <Navigate to='/tasks' />;
+    }
 
   const { data, isLoading, refetch } = useGetTeamListQuery();
 

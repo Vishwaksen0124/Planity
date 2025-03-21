@@ -15,7 +15,7 @@ import ConfirmationDialog from "../components/Dialogs";
 import { useDeleteRestoreTestMutation, useGetAllTaskQuery } from "../redux/slices/api/taskApiSlice";
 import Loading from "../components/Loader";
 import { toast } from "sonner";
-
+import { Navigate } from "react-router-dom";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -29,6 +29,12 @@ const Trash = () => {
   const [msg, setMsg] = useState(null);
   const [type, setType] = useState("delete");
   const [selected, setSelected] = useState("");
+  const user = useSelector((state) => state.auth.user);
+  if (user.role !== "Admin") {
+    toast.error("Not authenticated");
+    console.log("Not authenticated");
+    return <Navigate to='/tasks' />;
+  }
 
   const { data, isLoading, refetch } = useGetAllTaskQuery({
     strQuery: "",
