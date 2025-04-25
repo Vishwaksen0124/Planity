@@ -1,0 +1,250 @@
+openapi: 3.0.0
+info:
+  title: Task Management System API
+  version: 1.0.0
+  description: API documentation for the Task Management System backend
+
+servers:
+  - url: http://localhost:5000
+
+tags:
+  - name: Auth
+  - name: Tasks
+  - name: Subtasks
+  - name: Users
+  - name: Notifications
+  - name: Dashboard
+
+paths:
+  /api/auth/register:
+    post:
+      tags: [Auth]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, email, password]
+              properties:
+                name: { type: string }
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '201': { description: User registered successfully }
+        '400': { description: Bad request }
+
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string }
+                password: { type: string }
+      responses:
+        '200': { description: Login successful }
+        '401': { description: Invalid credentials }
+
+  /api/auth/logout:
+    get:
+      tags: [Auth]
+      summary: Logout user
+      responses:
+        '200': { description: Logout successful }
+
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Get current logged-in user info
+      responses:
+        '200': { description: User info }
+
+  /api/tasks:
+    get:
+      tags: [Tasks]
+      summary: Get all tasks
+      responses:
+        '200': { description: List of tasks }
+    post:
+      tags: [Tasks]
+      summary: Create a new task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string }
+                description: { type: string }
+                dueDate: { type: string, format: date-time }
+                assignedTo: { type: string }
+      responses:
+        '201': { description: Task created }
+
+  /api/tasks/{id}:
+    get:
+      tags: [Tasks]
+      summary: Get task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Task details }
+    put:
+      tags: [Tasks]
+      summary: Update task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                description: { type: string }
+                status: { type: string }
+                dueDate: { type: string, format: date-time }
+      responses:
+        '200': { description: Task updated }
+    delete:
+      tags: [Tasks]
+      summary: Delete task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Task deleted }
+
+  /api/tasks/{taskId}/subtasks:
+    post:
+      tags: [Subtasks]
+      summary: Add subtask to task
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title]
+              properties:
+                title: { type: string }
+      responses:
+        '201': { description: Subtask added }
+
+  /api/tasks/{taskId}/subtasks/{subtaskId}:
+    put:
+      tags: [Subtasks]
+      summary: Update subtask
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: subtaskId
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                completed: { type: boolean }
+      responses:
+        '200': { description: Subtask updated }
+    delete:
+      tags: [Subtasks]
+      summary: Delete subtask
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          schema: { type: string }
+        - name: subtaskId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Subtask deleted }
+
+  /api/users:
+    get:
+      tags: [Users]
+      summary: Get all users (admin only)
+      responses:
+        '200': { description: List of users }
+
+  /api/users/{id}:
+    get:
+      tags: [Users]
+      summary: Get user by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: User details }
+    delete:
+      tags: [Users]
+      summary: Delete user (admin only)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: User deleted }
+
+  /api/notifications:
+    get:
+      tags: [Notifications]
+      summary: Get all notifications for logged-in user
+      responses:
+        '200': { description: List of notifications }
+
+  /api/notifications/{id}/mark-read:
+    put:
+      tags: [Notifications]
+      summary: Mark notification as read
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: Notification marked as read }
+
+  /api/dashboard/stats:
+    get:
+      tags: [Dashboard]
+      summary: Get dashboard statistics
+      responses:
+        '200': { description: Statistics data }

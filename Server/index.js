@@ -6,7 +6,8 @@ import morgan from "morgan";
 import {dbConnection} from "./utils/index.js"
 import { errorHandler, routeNotFound } from "./middlewares/errorMiddlewares.js";
 import routes from "./routes/index.js"
-
+import swaggerUi from "swagger-ui-express";
+import YAML from "yamljs";
 
 dotenv.config();
 
@@ -32,9 +33,14 @@ app.use(morgan("dev"));
 
 app.use("/api", routes);
 
+const swaggerDocument = YAML.load('./swagger.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use(routeNotFound)
 app.use(errorHandler)
 
+
 app.listen(PORT, ()=>{
     console.log(`server running on port ${PORT}`);
+    console.log(`http://localhost:${PORT}/api-docs`);
 })
