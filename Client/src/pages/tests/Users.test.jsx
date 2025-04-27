@@ -153,7 +153,7 @@ describe("Users Page", () => {
         expect(await screen.findByText("AddUser Modal")).toBeInTheDocument();
     });
 
-    
+
 
     it("shows loading state if isLoading is true", () => {
         userApi.useGetTeamListQuery.mockReturnValueOnce({
@@ -172,20 +172,21 @@ describe("Users Page", () => {
             throw new Error("Failed to delete user");
         });
         userApi.useDeleteUserMutation.mockReturnValue([mockDeleteUser]);
-    
+
+        const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => { }); // <- suppress console.error
+
         renderComponent();
-    
+
         const deleteButtons = screen.getAllByText("Delete");
         fireEvent.click(deleteButtons[0]);
-    
+
         const confirmDelete = await screen.findByText("Confirm Delete");
         fireEvent.click(confirmDelete);
-    
+
         await waitFor(() => {
-            // Check that the correct error message is displayed
             expect(reactToast.toast.error).toHaveBeenCalledWith("Failed to delete user");
         });
+
+        consoleErrorSpy.mockRestore(); // <- restore after test
     });
-    
-    
 });
