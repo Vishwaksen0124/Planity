@@ -1,4 +1,4 @@
-name: CI
+name: Frontend CI
 
 on:
   push:
@@ -7,8 +7,12 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-test:
+  frontend-tests:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: client
 
     steps:
       - name: Checkout code
@@ -20,7 +24,11 @@ jobs:
           node-version: '20.18.0'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
+
+      - name: Run linter
+        run: npm run lint  # skip if you don't have lint script
 
       - name: Run tests
         run: npm test
+
