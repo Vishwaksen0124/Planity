@@ -8,6 +8,7 @@ import { errorHandler, routeNotFound } from "./middlewares/errorMiddlewares.js";
 import routes from "./routes/index.js"
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
+import redisClient from "./utils/redis.js";
 
 dotenv.config();
 
@@ -20,7 +21,7 @@ const PORT = process.env.PORT || 5000
 const app = express()
 
 app.use(cors({
-    origin:["http://localhost:3000","http://localhost:3001"],
+    origin:["http://localhost:3000","http://localhost:3001","http://localhost", "http://localhost:80"],
     methods:["GET","POST", "PUT", "DELETE"],
     credentials:true,
 }));
@@ -39,6 +40,12 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(routeNotFound)
 app.use(errorHandler)
 
+// Graceful shutdown
+process.on('SIGINT', async () => {
+    console.log('Received SIGINT. Performing graceful shutdown...');
+    await redisClient.quit();
+    process.exit(0);
+});
 
 app.listen(PORT, ()=>{
     console.log(`server running on port ${PORT}`);

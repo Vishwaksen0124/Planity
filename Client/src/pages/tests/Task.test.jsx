@@ -75,7 +75,7 @@ describe('Tasks page', () => {
     });
 
     it('renders loading initially if loading is true', () => {
-        useGetAllTaskQuery.mockReturnValueOnce({ isLoading: true }); // ✅ mock it directly
+        useGetAllTaskQuery.mockReturnValueOnce({ isLoading: true });
     
         renderWithProviders(<Tasks />);
         expect(screen.getByTestId('loader')).toBeInTheDocument();
