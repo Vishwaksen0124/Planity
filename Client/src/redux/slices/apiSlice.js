@@ -5,15 +5,9 @@ const API_URI = isLocal
   ? "http://localhost:8800"
   : "https://planity-4l0m.onrender.com";
 
-const baseQuery = fetchBaseQuery({
-  baseUrl: API_URI + "/api",
-  prepareHeaders: (headers) => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      headers.set("Authorization", `Bearer ${token}`);
-    }
-    return headers;
-  },
+
+const baseQuery = fetchBaseQuery({ baseUrl: API_URI +"/api" ,
+  credentials: "include",
 });
 
 export const apiSlice = createApi({
