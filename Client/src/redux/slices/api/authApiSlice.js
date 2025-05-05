@@ -9,7 +9,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 url:`${AUTH_URL}/login`,
                 method:"POST",
                 body:data,
-                credentials:"include",
             }),
 
             
@@ -20,7 +19,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 url:`${AUTH_URL}/register`,
                 method:"POST",
                 body:data,
-                credentials:"include",
             }),
 
             
@@ -31,7 +29,6 @@ export const authApiSlice = apiSlice.injectEndpoints({
             query:()=>({
                 url:`${AUTH_URL}/logout`,
                 method:"POST",
-                credentials:"include",
             }),
 
             
