@@ -19,7 +19,7 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 
 app.use(cors({
-    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost", "http://localhost:80","https://planity-4l0m.onrender.com"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost", "http://localhost:80","https://planity-1.onrender.com"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
 }));
