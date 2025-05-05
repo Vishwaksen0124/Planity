@@ -46,12 +46,18 @@ vi.mock('../../components/task/AddTask', () => ({
 }));
 
 // Mock API hook
+// Mock API hooks
 vi.mock('../../redux/slices/api/taskApiSlice', () => ({
     useGetAllTaskQuery: vi.fn(() => ({
         data: { tasks: [{ id: 1, title: 'Test Task' }] },
         isLoading: false,
     })),
+    useCreateTaskMutation: () => [
+        vi.fn(), // This is the mutation function (e.g., createTask)
+        { isLoading: false }, // Mutation state
+    ],
 }));
+
 
 // Helper to render with Redux + Router
 const renderWithProviders = (ui, { initialState = {} } = {}) => {
