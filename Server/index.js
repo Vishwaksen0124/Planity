@@ -8,7 +8,7 @@ import { errorHandler, routeNotFound } from "./middlewares/errorMiddlewares.js";
 import routes from "./routes/index.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
-import redisClient from "./utils/redis.js";
+import redisClient, { connectRedis } from "./utils/redis.js";
 
 dotenv.config();
 
@@ -41,17 +41,15 @@ app.use(errorHandler);
 // Async Redis connection and server start
 const startServer = async () => {
     try {
-        // Ensure Redis is connected before starting the server
-        await redisClient.connect();
+        await connectRedis();  // <-- this ensures no duplicate connection
         console.log('Redis connected successfully');
 
-        // Start the Express server
         app.listen(PORT, () => {
             console.log(`Server is running on port ${PORT}`);
         });
     } catch (err) {
         console.error('Redis connection error:', err);
-        process.exit(1); // Exit the process if Redis can't connect
+        process.exit(1);
     }
 };
 
