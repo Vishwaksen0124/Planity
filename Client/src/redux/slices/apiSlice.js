@@ -6,6 +6,7 @@ const API_URI = isLocal ? "http://localhost:8800" : window.location.origin;
 const baseQuery = fetchBaseQuery({ baseUrl: API_URI +"/api" });
 
 export const apiSlice = createApi({
+  reducerPath: "api",
   baseQuery,
   tagTypes: [],
   endpoints: (builder) => ({}),

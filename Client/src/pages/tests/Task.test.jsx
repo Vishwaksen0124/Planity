@@ -38,10 +38,11 @@ vi.mock('../../components/TaskTitle', () => ({
 vi.mock('../../components/BoardView', () => ({
     default: ({ tasks }) => <div data-testid="board-view-tasks">{tasks?.length ?? 0} tasks</div>,
 }));
-vi.mock('../../components/task/Table', () => ({
+vi.mock('../../components/Task/Table', () => ({
     default: ({ tasks }) => <div data-testid="table-tasks">{tasks?.length ?? 0} tasks</div>,
-}));
-vi.mock('../../components/task/AddTask', () => ({
+  }));
+  
+vi.mock('../../components/Task/AddTask', () => ({
     default: ({ open }) => (open ? <div data-testid="add-task-modal">Add Task Modal</div> : null),
 }));
 
@@ -49,21 +50,29 @@ vi.mock('../../components/task/AddTask', () => ({
 // Mock API hooks
 vi.mock('../../redux/slices/api/taskApiSlice', () => ({
     useGetAllTaskQuery: vi.fn(() => ({
-      data: { tasks: [{ id: 1, title: 'Test Task' }] },
-      isLoading: false,
+        data: { tasks: [{ id: 1, title: 'Test Task' }] },
+        isLoading: false,
     })),
     useCreateTaskMutation: vi.fn(() => [vi.fn(), {}]),
     useUpdateTaskMutation: vi.fn(() => [vi.fn(), {}]),
     useTrashTaskMutation: vi.fn(() => [vi.fn(), {}]),
-  }));
-  
+}));
 
 
-// Helper to render with Redux + Router
+
+import { apiSlice } from '../../redux/slices/apiSlice'; // ✅
+
 const renderWithProviders = (ui, { initialState = {} } = {}) => {
     const store = configureStore({
-        reducer: { auth: authReducer },
-        preloadedState: { auth: initialState.auth || { user: { role: 'admin' } } },
+        reducer: {
+            [apiSlice.reducerPath]: apiSlice.reducer, // ✅ ensures reducerPath matches
+            auth: authReducer,
+        },
+        middleware: (getDefaultMiddleware) =>
+            getDefaultMiddleware().concat(apiSlice.middleware), // ✅ adds RTK Query middleware
+        preloadedState: {
+            auth: initialState.auth || { user: { role: 'admin' } },
+        },
     });
 
     return render(
@@ -75,6 +84,7 @@ const renderWithProviders = (ui, { initialState = {} } = {}) => {
     );
 };
 
+
 describe('Tasks page', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -82,7 +92,7 @@ describe('Tasks page', () => {
 
     it('renders loading initially if loading is true', () => {
         useGetAllTaskQuery.mockReturnValueOnce({ isLoading: true });
-    
+
         renderWithProviders(<Tasks />);
         expect(screen.getByTestId('loader')).toBeInTheDocument();
     });
