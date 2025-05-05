@@ -1,4 +1,4 @@
-name: Full CI (Backend + Frontend)
+name: Run Tests
 
 on:
   push:
@@ -7,17 +7,15 @@ on:
     branches: [main]
 
 jobs:
-  backend-tests:
+  test-backend:
     name: Backend Tests
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: server
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -32,17 +30,15 @@ jobs:
       - name: Run backend tests
         run: npm run test
 
-  frontend-tests:
+  test-frontend:
     name: Frontend Tests
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: client
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
