@@ -12,6 +12,7 @@ import redisClient from "./utils/redis.js";
 
 dotenv.config();
 
+// Establish DB Connection
 dbConnection();
 
 const PORT = process.env.PORT || 5000;
@@ -37,20 +38,37 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 app.use(routeNotFound);
 app.use(errorHandler);
 
+// Async Redis connection and server start
+const startServer = async () => {
+    try {
+        // Ensure Redis is connected before starting the server
+        await redisClient.connect();
+        console.log('Redis connected successfully');
+
+        // Start the Express server
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    } catch (err) {
+        console.error('Redis connection error:', err);
+        process.exit(1); // Exit the process if Redis can't connect
+    }
+};
+
 // Graceful shutdown
 if (process.env.NODE_ENV !== "test") {
-    redisClient.connect().catch((err) => {
-        console.error("Redis connection error:", err);
-    });
-
-    // Graceful shutdown
+    // Graceful shutdown on SIGINT
     process.on('SIGINT', async () => {
         console.log('Received SIGINT. Performing graceful shutdown...');
         await redisClient.quit();
         process.exit(0);
     });
-}
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
 
+    // Start the server after Redis connection is established
+    startServer();
+} else {
+    // For testing environment, skip Redis connection
+    app.listen(PORT, () => {
+        console.log(`Server is running on port ${PORT}`);
+    });
+}
