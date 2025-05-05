@@ -53,7 +53,8 @@ vi.mock('../../redux/slices/api/taskApiSlice', () => ({
       isLoading: false,
     })),
     useCreateTaskMutation: vi.fn(() => [vi.fn(), {}]),
-    useUpdateTaskMutation: vi.fn(() => [vi.fn(), {}]), // ← add this line
+    useUpdateTaskMutation: vi.fn(() => [vi.fn(), {}]),
+    useTrashTaskMutation: vi.fn(() => [vi.fn(), {}]),
   }));
   
 
