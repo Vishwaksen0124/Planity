@@ -9,7 +9,7 @@ export default defineConfig({
     port: 3001,
     proxy:{
       "/api":{
-        "target":"http://localhost:8800",
+        "target":"https://planity-4l0m.onrender.com",
         "changeOrigin":true,
       },
     },
