@@ -10,7 +10,7 @@ import Tabs from "../components/Tabs";
 import TaskTitle from "../components/TaskTitle";
 import BoardView from "../components/BoardView";
 import Table from "../components/Task/Table";
-import AddTask from "../components/task/AddTask";
+import AddTask from "../components/Task/AddTask";
 import { useGetAllTaskQuery } from "../redux/slices/api/taskApiSlice";
 import { useSelector } from "react-redux";
 
