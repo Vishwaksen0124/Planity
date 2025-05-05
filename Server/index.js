@@ -9,7 +9,6 @@ import routes from "./routes/index.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import redisClient from "./utils/redis.js";
-import { beforeAll } from "vitest";
 
 dotenv.config();
 
