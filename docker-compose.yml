@@ -74,6 +74,21 @@ services:
     networks:
       - app-network
 
+  # NGINX service (added here)
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "8080:80"  # You can adjust this if needed
+    volumes:
+      - ./client/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf  # Path to your NGINX config file
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - app-network
+
 # Define networks
 networks:
   app-network:
