@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node index.js",
-    "test": "NODE_ENV=test vitest"
+    "test": "cross-env NODE_ENV=test vitest"
   },
   "author": "",
   "license": "ISC",

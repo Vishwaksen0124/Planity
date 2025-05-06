@@ -96,7 +96,7 @@ const AddUser = ({ open, setOpen, userData }) => {
               error={errors.email ? errors.email.message : ""}
             />
 
-            {user?.role !== "Admin" && (
+            {user?.role === "Admin" && (
               <SelectBox
                 placeholder="Role"
                 name="role"
