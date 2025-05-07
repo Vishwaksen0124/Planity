@@ -5,7 +5,7 @@ info:
   description: API documentation for the Task Management System backend
 
 servers:
-  - url: http://localhost:5000
+  - url: https://planity-4l0m.onrender.com
 
 tags:
   - name: Auth
@@ -16,9 +16,8 @@ tags:
   - name: Dashboard
 
 paths:
-  /api/auth/register:
+  /api/users/register:
     post:
-      tags: [Auth]
       summary: Register a new user
       requestBody:
         required: true
@@ -26,14 +25,25 @@ paths:
           application/json:
             schema:
               type: object
-              required: [name, email, password]
               properties:
-                name: { type: string }
-                email: { type: string }
-                password: { type: string }
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                isAdmin:
+                  type: boolean
+                role:
+                  type: string
+                title:
+                  type: string
       responses:
-        '201': { description: User registered successfully }
-        '400': { description: Bad request }
+        201:
+          description: User created successfully
+        400:
+          description: User already exists or invalid data
+
 
   /api/auth/login:
     post:
@@ -59,6 +69,8 @@ paths:
       summary: Logout user
       responses:
         '200': { description: Logout successful }
+  
+
 
   /api/auth/me:
     get:
@@ -194,12 +206,34 @@ paths:
       responses:
         '200': { description: Subtask deleted }
 
-  /api/users:
+  /api/users/get-team:
     get:
       tags: [Users]
       summary: Get all users (admin only)
       responses:
         '200': { description: List of users }
+
+  /api/users/profile:
+    patch:
+      summary: Update user profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                role:
+                  type: string
+                title:
+                  type: string
+      responses:
+        200:
+          description: User profile updated successfully
 
   /api/users/{id}:
     get:
