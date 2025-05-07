@@ -425,7 +425,7 @@ paths:
         '200':
           description: SubTask added successfully
 
-  /tasks/{id}:
+  /tasks/{id}/trash:
     put:
       summary: Trash a task
       security:
