@@ -15,7 +15,7 @@ const HomePage = () => {
           No 1 task management
         </div>
         <h1 className="text-3xl md:text-6xl text-center text-neutral-800 mb-6 "style={{fontFamily:" 'Nunito', 'Helvetica Neue', 'Arial', 'sans-serif'"}}>
-          Planity
+          Akshitha
         </h1>
         <div className="text-3xl md:text-6xl bg-gradient-to-r from-fuchsia-500 to-pink-500 text-white px-4 p-2 rounded-md pb-4 w-fit">
           Workforward
