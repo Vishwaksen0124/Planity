@@ -1,6 +1,7 @@
 import Notice from "../models/notification.js";
 import Task from "../models/task.js";
 import User from "../models/user.js";
+import { getCache, setCache, deleteCache } from "../utils/redis.js";
 
 export const createTask = async (req, res) => {
   try {
@@ -40,6 +41,10 @@ export const createTask = async (req, res) => {
       text,
       task: task._id,
     });
+    
+    // Invalidate tasks cache
+    await deleteCache(`tasks:${stage.toLowerCase()}:active`);
+    await deleteCache(`tasks:all:active`);
 
     res
       .status(200)
@@ -200,6 +205,20 @@ export const dashboardStatistics = async (req, res) => {
 export const getTasks = async (req, res) => {
   try {
     const { stage, isTrashed } = req.query;
+    
+    // Create a cache key based on query parameters
+    const cacheKey = `tasks:${stage || 'all'}:${isTrashed ? 'trashed' : 'active'}`;
+    
+    // Try to get data from cache
+    const cachedTasks = await getCache(cacheKey);
+    
+    if (cachedTasks) {
+      return res.status(200).json({
+        status: true,
+        tasks: cachedTasks,
+        fromCache: true
+      });
+    }
 
     let query = { isTrashed: isTrashed ? true : false };
 
@@ -215,10 +234,14 @@ export const getTasks = async (req, res) => {
       .sort({ _id: -1 });
 
     const tasks = await queryResult;
+    
+    // Cache the results for 1 hour (3600 seconds)
+    await setCache(cacheKey, tasks, 3600);
 
     res.status(200).json({
       status: true,
       tasks,
+      fromCache: false
     });
   } catch (error) {
     console.log(error);
@@ -229,6 +252,20 @@ export const getTasks = async (req, res) => {
 export const getTask = async (req, res) => {
   try {
     const { id } = req.params;
+    
+    // Create a cache key based on task ID
+    const cacheKey = `task:${id}`;
+    
+    // Try to get data from cache
+    const cachedTask = await getCache(cacheKey);
+    
+    if (cachedTask) {
+      return res.status(200).json({
+        status: true,
+        task: cachedTask,
+        fromCache: true
+      });
+    }
 
     const task = await Task.findById(id)
       .populate({
@@ -239,10 +276,14 @@ export const getTask = async (req, res) => {
         path: "activities.by",
         select: "name",
       });
+    
+    // Cache the results for 1 hour (3600 seconds)
+    await setCache(cacheKey, task, 3600);
 
     res.status(200).json({
       status: true,
       task,
+      fromCache: false
     });
   } catch (error) {
     console.log(error);
@@ -280,22 +321,40 @@ export const createSubTask = async (req, res) => {
 export const updateTask = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, date, team, stage, priority, assets } = req.body;
+    const { title, team, stage, date, priority, assets } = req.body;
 
     const task = await Task.findById(id);
 
-    task.title = title;
-    task.date = date;
-    task.priority = priority.toLowerCase();
-    task.assets = assets;
-    task.stage = stage.toLowerCase();
-    task.team = team;
+    if (!task) {
+      return res.status(404).json({
+        status: false,
+        message: "Task not found.",
+      });
+    }
+
+    // Store old stage for cache invalidation
+    const oldStage = task.stage;
+
+    task.title = title || task.title;
+    task.team = team || task.team;
+    task.stage = stage ? stage.toLowerCase() : task.stage;
+    task.date = date || task.date;
+    task.priority = priority ? priority.toLowerCase() : task.priority;
+    task.assets = assets || task.assets;
 
     await task.save();
+    
+    // Invalidate caches
+    await deleteCache(`task:${id}`);
+    await deleteCache(`tasks:${oldStage}:active`);
+    await deleteCache(`tasks:${task.stage}:active`);
+    await deleteCache(`tasks:all:active`);
 
-    res
-      .status(200)
-      .json({ status: true, message: "Task duplicated successfully." });
+    res.status(200).json({
+      status: true,
+      task,
+      message: "Task updated successfully.",
+    });
   } catch (error) {
     console.log(error);
     return res.status(400).json({ status: false, message: error.message });

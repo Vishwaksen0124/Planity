@@ -12,6 +12,7 @@ import {
   updateTask,
 } from "../controllers/taskController.js";
 import { isAdminRoute, protectRoute } from "../middlewares/authMiddleware.js"
+import { cacheMiddleware } from "../utils/redis.js";
 
 const router = express.Router();
 
@@ -19,9 +20,9 @@ router.post("/create", protectRoute, createTask);
 router.post("/duplicate/:id", protectRoute, duplicateTask);
 router.post("/activity/:id", protectRoute, postTaskActivity);
 
-router.get("/dashboard", protectRoute, isAdminRoute, dashboardStatistics);
-router.get("/", protectRoute, getTasks);
-router.get("/:id", protectRoute, getTask);
+router.get("/dashboard", protectRoute, cacheMiddleware(1800),isAdminRoute, dashboardStatistics);
+router.get("/", protectRoute, cacheMiddleware(1800), getTasks);
+router.get("/:id", protectRoute, cacheMiddleware(1800), getTask);
 
 router.put("/create-subtask/:id", protectRoute, createSubTask);
 router.put("/update/:id", protectRoute,  updateTask);
