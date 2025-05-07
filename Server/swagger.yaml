@@ -211,19 +211,6 @@ paths:
         201:
           description: Password changed successfully
 
-  /api/users/{id}/activate:
-    patch:
-      summary: Activate or deactivate user profile
-      parameters:
-        - in: path
-          name: id
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: User activation status updated
-
   /api/users/{id}/delete:
     delete:
       summary: Delete user profile
@@ -237,7 +224,7 @@ paths:
         200:
           description: User deleted successfully
 
-  /tasks:
+  /tasks/create:
     post:
       summary: Create a new task
       security:
