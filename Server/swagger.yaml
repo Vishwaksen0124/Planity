@@ -6,6 +6,11 @@ info:
 servers:
   - url: https://planity-4l0m.onrender.com
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     User:
       type: object
@@ -87,6 +92,7 @@ components:
           type: string
         task:
           type: string
+
 paths:
   /api/users/register:
     post:
@@ -154,7 +160,7 @@ paths:
     get:
       summary: Get user notifications
       responses:
-        201:
+        200:
           description: List of notifications
 
   /api/users/profile:
@@ -267,12 +273,45 @@ paths:
                   items:
                     type: string
       responses:
-        '200':
+        200:
           description: Task created successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+
+    get:
+      summary: Get tasks
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: stage
+          in: query
+          schema:
+            type: string
+        - name: isTrashed
+          in: query
+          schema:
+            type: boolean
+      responses:
+        200:
+          description: Tasks retrieved successfully
+
+  /tasks/{id}:
+    get:
+      summary: Get a task by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Task retrieved successfully
+
   /tasks/{id}/duplicate:
     post:
       summary: Duplicate a task
@@ -285,8 +324,9 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        200:
           description: Task duplicated successfully
+
   /tasks/{id}/activity:
     post:
       summary: Post an activity to a task
@@ -310,47 +350,19 @@ paths:
                 activity:
                   type: string
       responses:
-        '200':
+        200:
           description: Activity posted successfully
+
   /dashboard/statistics:
     get:
       summary: Get dashboard statistics
       security:
         - bearerAuth: []
       responses:
-        '200':
+        200:
           description: Dashboard statistics retrieved successfully
-  /tasks:
-    get:
-      summary: Get tasks
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: stage
-          in: query
-          schema:
-            type: string
-        - name: isTrashed
-          in: query
-          schema:
-            type: boolean
-      responses:
-        '200':
-          description: Tasks retrieved successfully
-  /tasks/{id}:
-    get:
-      summary: Get a task by ID
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Task retrieved successfully
+
+  /tasks/update/{id}:
     put:
       summary: Update a task
       security:
@@ -386,8 +398,9 @@ paths:
                   items:
                     type: string
       responses:
-        '200':
+        200:
           description: Task updated successfully
+
   /tasks/{id}/subtask:
     post:
       summary: Create a subtask
@@ -414,8 +427,9 @@ paths:
                   type: string
                   format: date
       responses:
-        '200':
+        200:
           description: SubTask added successfully
+
   /tasks/{id}/trash:
     post:
       summary: Trash a task
@@ -428,8 +442,9 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        200:
           description: Task trashed successfully
+
   /tasks/{id}/action:
     post:
       summary: Delete or restore a task
@@ -448,5 +463,5 @@ paths:
             type: string
             enum: [delete, deleteAll, restore, restoreAll]
       responses:
-        '200':
+        200:
           description: Operation performed successfully
