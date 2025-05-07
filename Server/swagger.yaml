@@ -1,24 +1,101 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: Task Management System API
+  title: Task Management API
+  description: API for managing tasks, subtasks, and notifications.
   version: 1.0.0
-  description: API documentation for the Task Management System backend
-
 servers:
-  - url: https://planity-4l0m.onrender.com
-
-tags:
-  - name: Auth
-  - name: Tasks
-  - name: Subtasks
-  - name: Users
-  - name: Notifications
-  - name: Dashboard
-
+  - url: http://localhost:3000/api
+    description: Local development server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        title:
+          type: string
+        role:
+          type: string
+        email:
+          type: string
+        isAdmin:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+    Task:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        team:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        stage:
+          type: string
+        date:
+          type: string
+          format: date
+        priority:
+          type: string
+        assets:
+          type: array
+          items:
+            type: string
+        activities:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
+        subTasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubTask'
+        isTrashed:
+          type: boolean
+    SubTask:
+      type: object
+      properties:
+        title:
+          type: string
+        date:
+          type: string
+          format: date
+        tag:
+          type: string
+    Activity:
+      type: object
+      properties:
+        type:
+          type: string
+        activity:
+          type: string
+        by:
+          $ref: '#/components/schemas/User'
+    Notice:
+      type: object
+      properties:
+        team:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        text:
+          type: string
+        task:
+          type: string
 paths:
   /api/users/register:
     post:
-      tags: [Auth]
       summary: Register a new user
       requestBody:
         required: true
@@ -45,10 +122,8 @@ paths:
         400:
           description: User already exists or invalid data
 
-
-  /api/auth/login:
+  /api/users/login:
     post:
-      tags: [Auth]
       summary: Login user
       requestBody:
         required: true
@@ -56,167 +131,40 @@ paths:
           application/json:
             schema:
               type: object
-              required: [email, password]
               properties:
-                email: { type: string }
-                password: { type: string }
+                email:
+                  type: string
+                password:
+                  type: string
       responses:
-        '200': { description: Login successful }
-        '401': { description: Invalid credentials }
+        200:
+          description: Login successful
+        401:
+          description: Invalid credentials
 
-  /api/auth/logout:
+  /api/users/logout:
     get:
-      tags: [Auth]
       summary: Logout user
       responses:
-        '200': { description: Logout successful }
-  
-
-
-  /api/auth/me:
-    get:
-      tags: [Auth]
-      summary: Get current logged-in user info
-      responses:
-        '200': { description: User info }
-
-  /api/tasks:
-    get:
-      tags: [Tasks]
-      summary: Get all tasks
-      responses:
-        '200': { description: List of tasks }
-    post:
-      tags: [Tasks]
-      summary: Create a new task
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [title]
-              properties:
-                title: { type: string }
-                description: { type: string }
-                dueDate: { type: string, format: date-time }
-                assignedTo: { type: string }
-      responses:
-        '201': { description: Task created }
-
-  /api/tasks/{id}:
-    get:
-      tags: [Tasks]
-      summary: Get task by ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Task details }
-    put:
-      tags: [Tasks]
-      summary: Update task
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title: { type: string }
-                description: { type: string }
-                status: { type: string }
-                dueDate: { type: string, format: date-time }
-      responses:
-        '200': { description: Task updated }
-    delete:
-      tags: [Tasks]
-      summary: Delete task
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Task deleted }
-
-  /api/tasks/{taskId}/subtasks:
-    post:
-      tags: [Subtasks]
-      summary: Add subtask to task
-      parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema: { type: string }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              required: [title]
-              properties:
-                title: { type: string }
-      responses:
-        '201': { description: Subtask added }
-
-  /api/tasks/{taskId}/subtasks/{subtaskId}:
-    put:
-      tags: [Subtasks]
-      summary: Update subtask
-      parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema: { type: string }
-        - name: subtaskId
-          in: path
-          required: true
-          schema: { type: string }
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                title: { type: string }
-                completed: { type: boolean }
-      responses:
-        '200': { description: Subtask updated }
-    delete:
-      tags: [Subtasks]
-      summary: Delete subtask
-      parameters:
-        - name: taskId
-          in: path
-          required: true
-          schema: { type: string }
-        - name: subtaskId
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: Subtask deleted }
+        200:
+          description: Logout successful
 
   /api/users/get-team:
     get:
-      tags: [Users]
-      summary: Get all users (admin only)
+      summary: Get team list
       responses:
-        '200': { description: List of users }
+        200:
+          description: List of users
+
+  /api/users/notifications:
+    get:
+      summary: Get user notifications
+      responses:
+        201:
+          description: List of notifications
 
   /api/users/profile:
     patch:
-      tags: [Users]
       summary: Update user profile
       requestBody:
         required: true
@@ -235,52 +183,276 @@ paths:
                   type: string
       responses:
         200:
-          description: User profile updated successfully
+          description: Profile updated successfully
 
-  /api/users/{id}:
-    get:
-      tags: [Users]
-      summary: Get user by ID
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: User details }
-    delete:
-      tags: [Users]
-      summary: Delete user (admin only)
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema: { type: string }
-      responses:
-        '200': { description: User deleted }
-
-  /api/notifications:
-    get:
-      tags: [Notifications]
-      summary: Get all notifications for logged-in user
-      responses:
-        '200': { description: List of notifications }
-
-  /api/notifications/{id}/mark-read:
-    put:
-      tags: [Notifications]
+  /api/users/mark-notification:
+    patch:
       summary: Mark notification as read
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+      responses:
+        200:
+          description: Notification marked as read
+
+  /api/users/change-password:
+    patch:
+      summary: Change user password
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+      responses:
+        201:
+          description: Password changed successfully
+
+  /api/users/{id}/activate:
+    patch:
+      summary: Activate or deactivate user profile
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User activation status updated
+
+  /api/users/{id}/delete:
+    delete:
+      summary: Delete user profile
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User deleted successfully
+
+  /tasks:
+    post:
+      summary: Create a new task
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                team:
+                  type: array
+                  items:
+                    type: string
+                stage:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                priority:
+                  type: string
+                assets:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Task created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+  /tasks/{id}/duplicate:
+    post:
+      summary: Duplicate a task
+      security:
+        - bearerAuth: []
       parameters:
         - name: id
           in: path
           required: true
-          schema: { type: string }
+          schema:
+            type: string
       responses:
-        '200': { description: Notification marked as read }
-
-  /api/dashboard/stats:
+        '200':
+          description: Task duplicated successfully
+  /tasks/{id}/activity:
+    post:
+      summary: Post an activity to a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                type:
+                  type: string
+                activity:
+                  type: string
+      responses:
+        '200':
+          description: Activity posted successfully
+  /dashboard/statistics:
     get:
-      tags: [Dashboard]
       summary: Get dashboard statistics
+      security:
+        - bearerAuth: []
       responses:
-        '200': { description: Statistics data }
+        '200':
+          description: Dashboard statistics retrieved successfully
+  /tasks:
+    get:
+      summary: Get tasks
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: stage
+          in: query
+          schema:
+            type: string
+        - name: isTrashed
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Tasks retrieved successfully
+  /tasks/{id}:
+    get:
+      summary: Get a task by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task retrieved successfully
+    put:
+      summary: Update a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                team:
+                  type: array
+                  items:
+                    type: string
+                stage:
+                  type: string
+                date:
+                  type: string
+                  format: date
+                priority:
+                  type: string
+                assets:
+                  type: array
+                  items:
+                    type: string
+      responses:
+        '200':
+          description: Task updated successfully
+  /tasks/{id}/subtask:
+    post:
+      summary: Create a subtask
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                tag:
+                  type: string
+                date:
+                  type: string
+                  format: date
+      responses:
+        '200':
+          description: SubTask added successfully
+  /tasks/{id}/trash:
+    post:
+      summary: Trash a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task trashed successfully
+  /tasks/{id}/action:
+    post:
+      summary: Delete or restore a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: actionType
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [delete, deleteAll, restore, restoreAll]
+      responses:
+        '200':
+          description: Operation performed successfully
