@@ -25,6 +25,7 @@ const TaskTable = ({ tasks }) => {
     medium: <MdKeyboardArrowUp />,
     low: <MdKeyboardArrowDown />,
   };
+  
 
   const TableHeader = () => (
     <thead className='border-b border-gray-300 '>
