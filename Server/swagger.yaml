@@ -4,8 +4,7 @@ info:
   description: API for managing tasks, subtasks, and notifications.
   version: 1.0.0
 servers:
-  - url: http://localhost:3000/api
-    description: Local development server
+  - url: https://planity-4l0m.onrender.com
 components:
   securitySchemes:
     bearerAuth:
