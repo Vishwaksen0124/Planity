@@ -3,11 +3,13 @@ import mongoose, { Schema } from "mongoose";
 const taskSchema = new Schema(
   {
     title: {
-         type: String,
-         required: true },
-    date: { 
-        type: Date, 
-        default: new Date() },
+      type: String,
+      required: true
+    },
+    date: {
+      type: Date,
+      default: new Date()
+    },
     priority: {
       type: String,
       default: "normal",
@@ -33,12 +35,14 @@ const taskSchema = new Schema(
           ],
         },
         activity: String,
-        date: { 
-            type: Date, 
-            default: new Date() },
+        date: {
+          type: Date,
+          default: new Date()
+        },
         by: {
-             type: Schema.Types.ObjectId,
-              ref: "User" },
+          type: Schema.Types.ObjectId,
+          ref: "User"
+        },
       },
     ],
 
@@ -51,11 +55,14 @@ const taskSchema = new Schema(
     ],
     assets: [String],
     team: [
-        { type: Schema.Types.ObjectId,
-         ref: "User" }],
-    isTrashed: { 
-        type: Boolean,
-        default: false },
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }],
+    isTrashed: {
+      type: Boolean,
+      default: false
+    },
   },
   { timestamps: true }
 );

@@ -8,7 +8,7 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password, isAdmin, role, title } = req.body;
 
-    const userExist = await User.findOne({ email });
+    const userExist = await User.findOne({ email }).lean();
 
     if (userExist) {
       return res.status(400).json({
