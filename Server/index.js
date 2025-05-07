@@ -6,8 +6,8 @@ import morgan from "morgan";
 import { dbConnection } from "./utils/index.js"
 import { errorHandler, routeNotFound } from "./middlewares/errorMiddlewares.js";
 import routes from "./routes/index.js"
-// import fs from "fs"
-// import path from "path";
+import fs from "fs"
+import path from "path";
 import redisClient from "./utils/redis.js";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
@@ -35,9 +35,9 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 app.use(cookieParser());
-// const logStream = fs.createWriteStream(path.join("logs", "access.log"), { flags: "a" });
+const logStream = fs.createWriteStream(path.join("logs", "access.log"), { flags: "a" });
 
-app.use(morgan("dev"));
+app.use(morgan("dev", { stream: logStream }));
 
 app.use("/api", routes);
 
