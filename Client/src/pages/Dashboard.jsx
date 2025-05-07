@@ -18,6 +18,7 @@ import Loading from "../components/Loader";
 import { Navigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 
+
 const TaskTable = ({ tasks }) => {
   const ICONS = {
     high: <MdKeyboardDoubleArrowUp />,
