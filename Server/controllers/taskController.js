@@ -41,7 +41,7 @@ export const createTask = async (req, res) => {
       text,
       task: task._id,
     });
-    
+
     // Invalidate tasks cache
     await deleteCache(`tasks:${stage.toLowerCase()}:active`);
     await deleteCache(`tasks:all:active`);
@@ -74,7 +74,6 @@ export const duplicateTask = async (req, res) => {
 
     await newTask.save();
 
-    //alert users of the task
     let text = "New task has been assigned to you";
     if (task.team.length > 1) {
       text = text + ` and ${task.team.length - 1} others.`;
@@ -141,6 +140,7 @@ export const dashboardStatistics = async (req, res) => {
             select: "name role title email",
           })
           .sort({ _id: -1 })
+          .lean()
       : await Task.find({
           isTrashed: false,
           team: { $all: [userId] },
@@ -149,37 +149,33 @@ export const dashboardStatistics = async (req, res) => {
             path: "team",
             select: "name role title email",
           })
-          .sort({ _id: -1 });
+          .sort({ _id: -1 })
+          .lean();
 
     const users = await User.find({ isActive: true })
       .select("name title role isAdmin createdAt")
       .limit(10)
-      .sort({ _id: -1 });
+      .sort({ _id: -1 })
+      .lean();
 
-    //   group task by stage and calculate counts
     const groupTaskks = allTasks.reduce((result, task) => {
       const stage = task.stage;
-
       if (!result[stage]) {
         result[stage] = 1;
       } else {
         result[stage] += 1;
       }
-
       return result;
     }, {});
 
-    // Group tasks by priority
     const groupData = Object.entries(
       allTasks.reduce((result, task) => {
         const { priority } = task;
-
         result[priority] = (result[priority] || 0) + 1;
         return result;
       }, {})
     ).map(([name, total]) => ({ name, total }));
 
-    // calculate total tasks
     const totalTasks = allTasks?.length;
     const last10Task = allTasks?.slice(0, 10);
 
@@ -205,18 +201,16 @@ export const dashboardStatistics = async (req, res) => {
 export const getTasks = async (req, res) => {
   try {
     const { stage, isTrashed } = req.query;
-    
-    // Create a cache key based on query parameters
-    const cacheKey = `tasks:${stage || 'all'}:${isTrashed ? 'trashed' : 'active'}`;
-    
-    // Try to get data from cache
+
+    const cacheKey = `tasks:${stage || "all"}:${isTrashed ? "trashed" : "active"}`;
+
     const cachedTasks = await getCache(cacheKey);
-    
+
     if (cachedTasks) {
       return res.status(200).json({
         status: true,
         tasks: cachedTasks,
-        fromCache: true
+        fromCache: true,
       });
     }
 
@@ -231,17 +225,17 @@ export const getTasks = async (req, res) => {
         path: "team",
         select: "name title email",
       })
-      .sort({ _id: -1 });
+      .sort({ _id: -1 })
+      .lean();
 
     const tasks = await queryResult;
-    
-    // Cache the results for 1 hour (3600 seconds)
+
     await setCache(cacheKey, tasks, 3600);
 
     res.status(200).json({
       status: true,
       tasks,
-      fromCache: false
+      fromCache: false,
     });
   } catch (error) {
     console.log(error);
@@ -252,18 +246,16 @@ export const getTasks = async (req, res) => {
 export const getTask = async (req, res) => {
   try {
     const { id } = req.params;
-    
-    // Create a cache key based on task ID
+
     const cacheKey = `task:${id}`;
-    
-    // Try to get data from cache
+
     const cachedTask = await getCache(cacheKey);
-    
+
     if (cachedTask) {
       return res.status(200).json({
         status: true,
         task: cachedTask,
-        fromCache: true
+        fromCache: true,
       });
     }
 
@@ -275,15 +267,15 @@ export const getTask = async (req, res) => {
       .populate({
         path: "activities.by",
         select: "name",
-      });
-    
-    // Cache the results for 1 hour (3600 seconds)
+      })
+      .lean();
+
     await setCache(cacheKey, task, 3600);
 
     res.status(200).json({
       status: true,
       task,
-      fromCache: false
+      fromCache: false,
     });
   } catch (error) {
     console.log(error);
@@ -332,7 +324,6 @@ export const updateTask = async (req, res) => {
       });
     }
 
-    // Store old stage for cache invalidation
     const oldStage = task.stage;
 
     task.title = title || task.title;
@@ -343,8 +334,7 @@ export const updateTask = async (req, res) => {
     task.assets = assets || task.assets;
 
     await task.save();
-    
-    // Invalidate caches
+
     await deleteCache(`task:${id}`);
     await deleteCache(`tasks:${oldStage}:active`);
     await deleteCache(`tasks:${task.stage}:active`);
@@ -392,14 +382,10 @@ export const deleteRestoreTask = async (req, res) => {
       await Task.deleteMany({ isTrashed: true });
     } else if (actionType === "restore") {
       const resp = await Task.findById(id);
-
       resp.isTrashed = false;
       resp.save();
     } else if (actionType === "restoreAll") {
-      await Task.updateMany(
-        { isTrashed: true },
-        { $set: { isTrashed: false } }
-      );
+      await Task.updateMany({ isTrashed: true }, { $set: { isTrashed: false } });
     }
 
     res.status(200).json({
