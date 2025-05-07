@@ -31,6 +31,12 @@ export const registerUser = async (req, res) => {
 
       user.password = undefined;
 
+      // Invalidate team list cache
+      await deleteCache("cache:/api/users/get-team");
+
+      // Invalidate user profile cache if it exists
+      await deleteCache(`cache:/api/users/${user._id}`);
+
       res.status(201).json(user);
     } else {
       return res
@@ -87,7 +93,7 @@ export const logoutUser = async (req, res) => {
       httpOnly: true,
       expires: new Date(0),
     });
-    
+
     res.status(200).json({ message: "Logout successful" });
   } catch (error) {
     console.log(error);
@@ -142,10 +148,10 @@ export const updateUserProfile = async (req, res) => {
     user.title = title || user.title;
 
     await user.save();
-    
+
     // Invalidate team list cache
     await deleteCache("cache:/api/users/get-team");
-    
+
     // Invalidate user profile cache if it exists
     await deleteCache(`cache:/api/users/${userId}`);
 
@@ -177,7 +183,7 @@ export const markNotificationRead = async (req, res) => {
     if (!notice.isRead.includes(userId)) {
       notice.isRead.push(userId);
       await notice.save();
-      
+
       // Invalidate notifications cache
       await deleteCache("cache:/api/users/notifications");
     }
@@ -233,7 +239,7 @@ export const activateUserProfile = async (req, res) => {
 
     user.isActive = !user.isActive;
     await user.save();
-    
+
     // Invalidate team list cache
     await deleteCache("cache:/api/users/get-team");
 
@@ -262,7 +268,7 @@ export const deleteUserProfile = async (req, res) => {
     }
 
     await user.deleteOne();
-    
+
     // Invalidate team list cache
     await deleteCache("cache:/api/users/get-team");
 
