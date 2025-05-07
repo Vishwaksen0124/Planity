@@ -6,11 +6,6 @@ info:
 servers:
   - url: https://planity-4l0m.onrender.com
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
   schemas:
     User:
       type: object
