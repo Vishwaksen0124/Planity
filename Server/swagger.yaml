@@ -18,6 +18,7 @@ tags:
 paths:
   /api/users/register:
     post:
+      tags: [Auth]
       summary: Register a new user
       requestBody:
         required: true
@@ -215,6 +216,7 @@ paths:
 
   /api/users/profile:
     patch:
+      tags: [Users]
       summary: Update user profile
       requestBody:
         required: true
