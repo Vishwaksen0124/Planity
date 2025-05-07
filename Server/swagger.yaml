@@ -211,7 +211,7 @@ paths:
         201:
           description: Password changed successfully
 
-  /api/users/{id}/delete:
+  /api/users/{id}:
     delete:
       summary: Delete user profile
       parameters:
@@ -261,7 +261,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Task'
 
-  /api/tasks/{id}/duplicate:
+  /api/tasks/duplicate/{id}:
     post:
       summary: Duplicate a task
       security:
@@ -276,7 +276,7 @@ paths:
         '200':
           description: Task duplicated successfully
 
-  /api/tasks/{id}/activity:
+  /api/tasks/activity/{id}:
     post:
       summary: Post an activity to a task
       security:
@@ -343,6 +343,20 @@ paths:
       responses:
         '200':
           description: Task retrieved successfully
+    
+    put:
+      summary: Trash a task
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Task trashed successfully
 
   /api/tasks/update/{id}:
     put:
@@ -412,22 +426,22 @@ paths:
         '200':
           description: SubTask added successfully
 
-  /api/tasks/{id}/trash:
-    put:
-      summary: Trash a task
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Task trashed successfully
+  # /api/tasks/{id}:
+  #   put:
+  #     summary: Trash a task
+  #     security:
+  #       - bearerAuth: []
+  #     parameters:
+  #       - name: id
+  #         in: path
+  #         required: true
+  #         schema:
+  #           type: string
+  #     responses:
+  #       '200':
+  #         description: Task trashed successfully
 
-  /api/tasks/{id}/action:
+  /api/tasks/delete-restore/{id}:
     post:
       summary: Delete or restore a task
       security:
