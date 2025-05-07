@@ -2,33 +2,49 @@ import { createClient } from 'redis';
 import dotenv from 'dotenv';
 
 dotenv.config();
+let redisClient = null;
 
-const redisClient = createClient({
-  url: process.env.REDIS_URL || 'redis://localhost:6379',
-});
+if (process.env.NODE_ENV !== 'test') {
 
-redisClient.on('error', (err) => console.log('Redis Client Error', err));
-redisClient.on('connect', () => console.log('Connected to Redis'));
 
-// Only connect once when you explicitly call this function
-export const connectRedis = async () => {
-  if (!redisClient.isOpen) {
-    await redisClient.connect();
-  }
-};
+  // Create Redis client
+  const redisClient = createClient({
+    url: process.env.REDIS_URL || 'redis://localhost:6379',
+  });
+  console.log('Redis URL:', process.env.REDIS_URL || 'redis://localhost:6379');
+  // Connect to Redis
+  redisClient.on('error', (err) => console.log('Redis Client Error', err));
+  redisClient.on('connect', () => console.log('Connected to Redis'));
 
-// Middleware, utility functions...
+  // Connect to Redis when the module is imported
+  await redisClient.connect();
+} else {
+  console.log('Redis client not initialized in test environment');
+}
+
+// Cache middleware for Express routes
 export const cacheMiddleware = (duration) => {
   return async (req, res, next) => {
-    if (req.method !== 'GET') return next();
+    // Skip caching for non-GET requests
+    if (req.method !== 'GET') {
+      return next();
+    }
 
     const key = `cache:${req.originalUrl}`;
-    try {
-      const cachedData = await redisClient.get(key);
-      if (cachedData) return res.json(JSON.parse(cachedData));
 
+    try {
+      // Try to get cached data
+      const cachedData = await redisClient.get(key);
+
+      if (cachedData) {
+        // If data is found in cache, return it
+        return res.json(JSON.parse(cachedData));
+      }
+
+      // If no cached data, modify res.json to cache the response
       const originalJson = res.json;
       res.json = function (data) {
+        // Cache the data with the specified duration
         redisClient.setEx(key, duration, JSON.stringify(data));
         return originalJson.call(this, data);
       };
@@ -41,6 +57,7 @@ export const cacheMiddleware = (duration) => {
   };
 };
 
+// Utility functions for Redis operations
 export const setCache = async (key, value, duration) => {
   try {
     await redisClient.setEx(key, duration, JSON.stringify(value));
@@ -81,4 +98,4 @@ export const clearCache = async () => {
   }
 };
 
-export default redisClient;
+export default redisClient; 
