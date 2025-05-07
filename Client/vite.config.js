@@ -11,6 +11,7 @@ export default defineConfig({
       "/api":{
         "target":"https://planity-4l0m.onrender.com",
         "changeOrigin":true,
+        secure:false,
       },
     },
 
