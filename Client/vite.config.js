@@ -21,4 +21,7 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: './setupTests.js', // We'll create this next
   },
+  build: {
+    sourcemap: true,
+  },
 })
