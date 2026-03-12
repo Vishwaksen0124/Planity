@@ -27,7 +27,7 @@ const Login = () => {
     try {
       const result = await login(data).unwrap();
       dispatch(setCredentials(result));
-      if(result?.role == "Admin"){
+      if(result?.role == "Administrator"){
         navigate('/dashboard');
       }else{
         navigate('/tasks')

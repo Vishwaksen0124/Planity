@@ -17,7 +17,7 @@ const Users = () => {
   const [selected, setSelected] = useState(null);
   const { user } = useSelector((state) => state.auth);
   const roles = user.role
-  if (roles !== "Admin") {
+  if (roles !== "Administrator") {
       toast.error("Not authenticated");
       console.log("Not authenticated");
       return <Navigate to='/tasks' />;
@@ -96,7 +96,7 @@ const Users = () => {
   );
 
   const TableRow = ({ user }) => {
-    if (user?.role === "Admin") return null;
+    if (user?.role === "Administrator") return null;
     return(
       <tr className='border-b border-gray-200 text-gray-600 hover:bg-gray-400/10'>
       <td className='p-2'>
@@ -125,7 +125,7 @@ const Users = () => {
           {user?.isActive ? "Active" : "Disabled"}
         </button>
       </td> */}
-      {roles === "Admin" && (
+      {roles === "Administrator" && (
         <td className='p-2 flex gap-4 justify-end'>
           <Button
             className='text-blue-600 hover:text-blue-500 font-semibold sm:px-0'
@@ -152,7 +152,7 @@ const Users = () => {
       <div className='w-full md:px-1 px-0 mb-6'>
         <div className='flex items-center justify-between mb-8'>
           <Title title='  Team Members' />
-          {roles === "Admin" && (
+          {roles === "Administrator" && (
             <Button
               label='Add New User'
               icon={<IoMdAdd className='text-lg' />}

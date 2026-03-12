@@ -25,7 +25,7 @@ const TaskCard = ({ task }) => {
   const { user } = useSelector((state) => state.auth);
   const isUserInTeam = task?.team?.some((member) => member._id === user?._id);
   const [open, setOpen] = useState(false);
-  const canViewTask = isUserInTeam || user?.role === 'Admin'
+  const canViewTask = isUserInTeam || user?.role === 'Administrator'
 
   return canViewTask ? (
     <>

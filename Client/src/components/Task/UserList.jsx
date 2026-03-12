@@ -8,7 +8,7 @@ import { useGetTeamListQuery } from "../../redux/slices/api/userApiSlice";
 
 const UserList = ({ setTeam, team }) => {
   const { data, isLoading } = useGetTeamListQuery();
-  const nonAdminData = data?.filter((member) => member.role !== "Admin");
+  const nonAdminData = data?.filter((member) => member.role !== "Administrator");
   const [selectedUsers, setSelectedUsers] = useState([]);
 
   const handleChange = (el) => {

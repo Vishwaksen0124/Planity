@@ -128,7 +128,7 @@ const TaskDialog = ({ task }) => {
                 ))}
               </div>
 
-              {roles !== "user" && (
+              {roles !== "Developer" && (
                 <div className='px-1 py-1'>
                 <MenuItem>
                   {({ active }) => (

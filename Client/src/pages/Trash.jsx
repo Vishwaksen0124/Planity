@@ -32,7 +32,7 @@ const Trash = () => {
   const [type, setType] = useState("delete");
   const [selected, setSelected] = useState("");
   const user = useSelector((state) => state.auth.user);
-  if (user.role !== "Admin") {
+  if (user.role !== "Administrator") {
     toast.error("Not authenticated");
     console.log("Not authenticated");
     return <Navigate to='/tasks' />;

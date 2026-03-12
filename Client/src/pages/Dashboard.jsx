@@ -151,7 +151,7 @@ const UserTable = ({ users }) => {
 };
 const Dashboard = () => {
   const user = useSelector((state) => state.auth.user);
-    if (user.role !== "Admin") {
+    if (user.role !== "Administrator") {
       console.log("Not authenticated");
       return <Navigate to='/tasks' />;
     }

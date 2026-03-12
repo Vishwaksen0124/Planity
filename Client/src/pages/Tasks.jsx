@@ -50,7 +50,7 @@ const Tasks = () => {
       <div className='flex items-center justify-between mb-4'>
         <Title title={status ? `${status} Tasks` : "Tasks"} />
 
-        {!status && roles !== "user" &&(
+        {!status && roles !== "Developer" &&(
           <Button
             onClick={() => setOpen(true)}
             label='Create Task'

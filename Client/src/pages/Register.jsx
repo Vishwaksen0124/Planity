@@ -132,8 +132,8 @@ const Register = () => {
                                     name="role"
                                     className="w-full rounded-full"
                                     options={[
-                                        { value: "user", label: "User" },
-                                        { value: "team_lead", label: "Team Lead" },
+                                        { value: "Developer", label: "Developer" },
+                                        { value: "Team Lead", label: "Team Lead" },
                                     ]}
                                     register={register("role", {
                                         required: "Role is required!",

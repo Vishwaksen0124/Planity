@@ -96,7 +96,7 @@ const AddUser = ({ open, setOpen, userData }) => {
               error={errors.email ? errors.email.message : ""}
             />
 
-            {user?.role === "Admin" && (
+            {user?.role === "Administrator" && (
               <SelectBox
                 placeholder="Role"
                 name="role"
@@ -107,8 +107,8 @@ const AddUser = ({ open, setOpen, userData }) => {
                 })}
                 error={errors.role ? errors.role.message : ""}
                 options={[
-                  { value: "user", label: "User" },
-                  { value: "team_lead", label: "Team Lead" },
+                  { value: "Developer", label: "Developer" },
+                  { value: "Team Lead", label: "Team Lead" },
                 ]}
               />
             )}
