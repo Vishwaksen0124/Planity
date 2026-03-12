@@ -26,7 +26,9 @@ const noticeSchema = new Schema(
      },
      { timestamps: true }
 );
-noticeSchema.index({ team: 1, isRead: 1 });
+// Removed compound index on two array fields (team and isRead)
+// MongoDB doesn't allow indexing parallel arrays
+// Individual index on team is already set at field level (line 8)
 
 const Notice = mongoose.model("Notice", noticeSchema);
 
